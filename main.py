@@ -77,17 +77,28 @@ async def create_embed(interaction: discord.Interaction, title:str, hexc:str, me
 
 @bot.tree.command(name="delembed", description="delete an embed")
 async def delembed(interaction:discord.Interaction, message_id:str):
+    # turn into int (bypass weird API limit, doesn't handle integers of ID-length client-side)
     message_id = int(message_id)
+    #Refresh the list of embeds
     jsO = refreshJsonStore()
+    # iterate through the list of embeds.....
     for i in list(jsO):
+        #... To find embed specified by the parameter
         if i["metadata"]["message_id"] == message_id:
+            # Find the channel (to ensure command doesn't have to be used in the origin channel)
             chan = bot.get_channel(i["metadata"]["channel_id"])
+            # fetch the specified message
             msg = await chan.fetch_message(message_id)
+            # delete the embed
             await msg.delete()
+            # remove from active list of embeds
             jsO.remove(i)
+            # Update json storage file
             with open(os.path.dirname(os.path.realpath(__file__))+"/embeds.json", 'w') as o:
                 json.dump(jsO, o)
+            # send confirmation epheremal message
             await interaction.response.send_message("Message Deleted", ephemeral=True)
+
 
 @bot.tree.command(name="clearallembeds", description="Clear all embeds")
 async def clearallembeds(interaction:discord.Interaction):
