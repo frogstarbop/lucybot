@@ -98,6 +98,7 @@ async def delembed(interaction:discord.Interaction, message_id:str):
                 json.dump(jsO, o)
             # send confirmation epheremal message
             await interaction.response.send_message("Message Deleted", ephemeral=True)
+            await chan.send(f"Embed in this channel with the id {message_id} was successfully removed", delete_after=5)
 
 
 @bot.tree.command(name="clearallembeds", description="Clear all embeds")
