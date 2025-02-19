@@ -106,6 +106,12 @@ async def delembed(interaction:discord.Interaction, message_id:str):
 
 @bot.tree.command(name="clearallembeds", description="Clear all embeds")
 async def clearallembeds(interaction:discord.Interaction):
+    jsO = refreshJsonStore()
+    for i in jsO:
+        chan = bot.get_channel(i["metadata"]["channel_id"])
+        msg = await chan.fetch_message(i["metadata"]["message_id"])
+        await msg.delete()
+        await chan.send(f"embed in channel {chan.id} with the id {msg.id} has been removed", delete_after=5)
     clearJsonStore()
     await interaction.response.send_message(f"All Embeds cleared. Current length of embed list is {len(jsO)}")
 
