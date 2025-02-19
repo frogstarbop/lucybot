@@ -106,21 +106,35 @@ async def delembed(interaction:discord.Interaction, message_id:str):
 
 @bot.tree.command(name="clearallembeds", description="Clear all embeds")
 async def clearallembeds(interaction:discord.Interaction):
+    # refresh to up-to-date list of embeds
     jsO = refreshJsonStore()
+    # for every embed...
     for i in jsO:
+        # ... get the channel of the embed ....
         chan = bot.get_channel(i["metadata"]["channel_id"])
+        # ... get the message object of the embed ...
         msg = await chan.fetch_message(i["metadata"]["message_id"])
+        # ... delete the message
         await msg.delete()
+        # send feedback
         await chan.send(f"embed in channel {chan.id} with the id {msg.id} has been removed", delete_after=5)
+    # clear program-side storage and json file
     clearJsonStore()
     await interaction.response.send_message(f"All Embeds cleared. Current length of embed list is {len(jsO)}")
 
+# Input: dict and list to compare
+# Returns: finalised list, True/False whether to send
 def inpListIfNotMatch(d1:dict, ls:list):
+    # For object in the list
     for i in ls:
+        # if the titles and channels match...
         if (i["embedinfo"]["title"].lower() == d1["embedinfo"]["title"].lower()) and (i["metadata"]["channel_id"] == d1["metadata"]["channel_id"]):
             print("matched")
+            # Return the list, and send "False"
             return (ls, False)
+    # Else if no repeat was found, add object to end of list, ordered chrono. 
     ls.append(d1)
+    # Return updated list, with true param to indicate embed can be sent
     return (ls, True)
 
 @bot.command()
@@ -134,14 +148,16 @@ async def sync(ctx):
 async def ping(ctx):
     await ctx.send("Ping")
 
+# Refresh the embed storage
 async def refreshEmbedsStore(ctx):
     jsO=refreshJsonStore()
     ctx.send(f"Refreshed {len(jsO)}")
 
+# clear the embed storage
 async def clearEmbedStore(ctx):
     jsO = clearJsonStore()
     ctx.send(f"Refreshed {len(jsO)}")
 
 
-
+# Run the bot using .env file (not shown in github due to safety)
 bot.run(os.getenv("BOT_TOKEN"))
