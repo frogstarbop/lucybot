@@ -56,20 +56,21 @@ async def create_embed(interaction: discord.Interaction, title:str, hexc:str, me
                 "content":message_content
                 }
             }
-    
+    # check if the embed already exists inside the list of current embeds
     jsO, dosend = inpListIfNotMatch(embDict, jsO)
+    # if it doesnt match (i.e. if Do Send is true)
     if dosend:
+        # send the embed, and attach it to a variable
         sent = await interaction.channel.send(embed=embed)
+        # update the appropriate value in the active embeds storage
         jsO[len(jsO)-1]["metadata"]["message_id"] = sent.id
+        # send ephemeral status message
         await interaction.response.send_message("Embed Created successfully", ephemeral=True)
+    # If an embed by the same name already exists
     else:
+        # Send error
         await interaction.response.send_message("Same title and channel embed already exists", ephemeral=True)
-
-
-
-
-
-
+    # send active embeds  to json file
     with open(os.path.dirname(os.path.realpath(__file__))+"/embeds.json", 'w') as o:
         json.dump(jsO, o)
     print(jsO)
