@@ -27,18 +27,22 @@ def clearJsonStore():
 #async def hello(interaction: discord.Interaction):
 #    await interaction.response.send_message("Test Output Hi")
 
+#Customise and display an embedded message in the channel
 @bot.tree.command(name = "create_embed", description = "Embed a Message")
 async def create_embed(interaction: discord.Interaction, title:str, hexc:str, message_content:str, author:str=None):
     jsO = refreshJsonStore()
     print(jsO)
-
+    # if there is no author, set it to the user who sent the command
     if author is None:
         author = interaction.user
+    #Remove any '#' from the colour hex
     hexc= hexc.strip('#')
     hex_int = int(hexc, base=16)
 
+    # Create the embed template, setting parameters to the command inputs
     embed = discord.Embed(title=title, description=message_content, color=hex_int)
     embed.set_author(name=author)
+    # set up the dictionary to export to json file
     embDict = {
             "metadata":{
 
@@ -52,6 +56,7 @@ async def create_embed(interaction: discord.Interaction, title:str, hexc:str, me
                 "content":message_content
                 }
             }
+    
     jsO, dosend = inpListIfNotMatch(embDict, jsO)
     if dosend:
         sent = await interaction.channel.send(embed=embed)
@@ -71,14 +76,17 @@ async def create_embed(interaction: discord.Interaction, title:str, hexc:str, me
 
 
 @bot.tree.command(name="delembed", description="delete an embed")
-async def delembed(interaction:discord.Interaction, message_id:int):
-
+async def delembed(interaction:discord.Interaction, message_id:str):
+    message_id = int(message_id)
     jsO = refreshJsonStore()
     for i in list(jsO):
         if i["metadata"]["message_id"] == message_id:
-            msg = await discord.channel.fetch_message(message_id)
+            chan = bot.get_channel(i["metadata"]["channel_id"])
+            msg = await chan.fetch_message(message_id)
             await msg.delete()
             jsO.remove(i)
+            with open(os.path.dirname(os.path.realpath(__file__))+"/embeds.json", 'w') as o:
+                json.dump(jsO, o)
             await interaction.response.send_message("Message Deleted", ephemeral=True)
 
 @bot.tree.command(name="clearallembeds", description="Clear all embeds")
