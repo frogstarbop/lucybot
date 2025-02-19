@@ -9,7 +9,6 @@ import json
 intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix="*", intents=intents)
-type colorForm = list[int]
 load_dotenv()
 jsO = None
 def refreshJsonStore():
