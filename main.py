@@ -31,7 +31,7 @@ def clearJsonStore():
 @bot.tree.command(name = "create_embed", description = "Embed a Message")
 async def create_embed(interaction: discord.Interaction, title:str, hexc:str, message_content:str, author:str=None):
     jsO = refreshJsonStore()
-    print(jsO)
+    
     # if there is no author, set it to the user who sent the command
     if author is None:
         author = interaction.user
@@ -72,6 +72,7 @@ async def create_embed(interaction: discord.Interaction, title:str, hexc:str, me
 
     with open(os.path.dirname(os.path.realpath(__file__))+"/embeds.json", 'w') as o:
         json.dump(jsO, o)
+    print(jsO)
 
 
 
