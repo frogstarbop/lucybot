@@ -99,6 +99,7 @@ async def delembed(interaction:discord.Interaction, message_id:str):
                 json.dump(jsO, o)
             # send confirmation epheremal message
             await interaction.response.send_message("Message Deleted", ephemeral=True)
+            # send timed confirmation message in the parent channel of the embed
             await chan.send(f"Embed in this channel with the id {message_id} was successfully removed", delete_after=5)
 
 
@@ -114,14 +115,6 @@ def inpListIfNotMatch(d1:dict, ls:list):
             return (ls, False)
     ls.append(d1)
     return (ls, True)
-def getUniqueID(ls:list):
-    j = 0
-    for i in ls:
-        j = random.randint(1000,9999)
-        if i["metadata"]["id"] == j:
-            return False
-    return j
-
 
 @bot.command()
 @commands.is_owner()
