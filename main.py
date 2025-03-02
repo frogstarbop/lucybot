@@ -122,14 +122,20 @@ async def clearallembeds(interaction:discord.Interaction):
     await interaction.response.send_message(f"All Embeds cleared. Current length of embed list is {len(jsO)}")
 
 class TestModal(ui.Modal, title = "Test Modal"):
+    idraw = ui.TextInput(label = "Enter embed message ID: ", placeholder="Please enter an ID", required=True)
     answer = ui.TextInput(label = "Test question label?", placeholder="yes", required=True)
     async def on_submit(self, interaction: discord.Interaction):
+        id = self.idraw
         embed = discord.Embed(title = self.title, description=f"**{self.answer.label}**\n{self.answer}")
         await interaction.response.send_message(embed = embed)
 
 @bot.tree.command(name="testmodal", description="testmodal")
 async def testmodal(interaction: discord.Interaction):
     await interaction.response.send_modal(TestModal())
+
+
+#class EditModal(ui.Modal, title="Edit Embed"):
+
 # Input: dict and list to compare
 # Returns: finalised list, True/False whether to send
 def inpListIfNotMatch(d1:dict, ls:list):
